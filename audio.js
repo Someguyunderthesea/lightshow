@@ -46,6 +46,17 @@ class AudioEngine {
     this.pauseOffset = 0;
   }
 
+  async loadUrl(url) {
+    if (!this.audioCtx) this.init();
+    this.stop();
+
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Failed to fetch audio: ${resp.status}`);
+    const arrayBuffer = await resp.arrayBuffer();
+    this.audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+    this.pauseOffset = 0;
+  }
+
   play() {
     if (!this.audioBuffer || this.isPlaying) return;
     if (this.audioCtx.state === 'suspended') {
