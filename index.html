@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stadium Light Show</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Stadium Light Show</h1>
+      <div id="controls">
+        <label id="file-label" for="audio-file">Load Song</label>
+        <input type="file" id="audio-file" accept="audio/*">
+        <button id="play-btn" disabled>Play</button>
+        <button id="stop-btn" disabled>Stop</button>
+        <div id="pattern-select">
+          <label for="pattern">Pattern:</label>
+          <select id="pattern">
+            <option value="reactive">Frequency Reactive</option>
+            <option value="wave">Wave</option>
+            <option value="pulse">Beat Pulse</option>
+            <option value="rainbow">Rainbow Sweep</option>
+            <option value="strobe">Strobe</option>
+          </select>
+        </div>
+        <div id="sensitivity-control">
+          <label for="sensitivity">Sensitivity:</label>
+          <input type="range" id="sensitivity" min="0.5" max="3" step="0.1" value="1.5">
+        </div>
+      </div>
+      <div id="now-playing"></div>
+    </header>
+    <canvas id="stadium"></canvas>
+  </div>
+  <script src="audio.js"></script>
+  <script src="stadium.js"></script>
+  <script src="patterns.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
