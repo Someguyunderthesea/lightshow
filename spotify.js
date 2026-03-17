@@ -40,7 +40,7 @@ class SpotifyClient {
       redirect_uri: this.redirectUri,
       code_challenge_method: 'S256',
       code_challenge: codeChallenge,
-      scope: 'user-read-private',
+      scope: 'user-read-private streaming',
     });
 
     window.location.href = `https://accounts.spotify.com/authorize?${params}`;
@@ -117,7 +117,7 @@ class SpotifyClient {
       headers: { Authorization: `Bearer ${this.accessToken}` },
     });
 
-    if (resp.status === 401) {
+    if (resp.status === 401 || resp.status === 403) {
       this.logout();
       throw new Error('Token expired — please log in again');
     }
