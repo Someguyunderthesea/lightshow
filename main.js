@@ -101,7 +101,7 @@
       renderSpotifyResults(tracks);
     } catch (err) {
       spotifyResults.innerHTML = `<div class="hint">Error: ${err.message}</div>`;
-      if (err.message.includes('expired') || err.message.includes('Not authenticated')) {
+      if (err.message.includes('expired') || err.message.includes('log in again') || err.message.includes('Not authenticated')) {
         showSpotifySetup();
       }
     }

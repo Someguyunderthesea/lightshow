@@ -117,9 +117,12 @@ class SpotifyClient {
       headers: { Authorization: `Bearer ${this.accessToken}` },
     });
 
-    if (resp.status === 401 || resp.status === 403) {
+    if (resp.status === 401) {
       this.logout();
       throw new Error('Token expired — please log in again');
+    }
+    if (resp.status === 403) {
+      throw new Error('Spotify denied the request — your app may be in development mode or rate-limited');
     }
     if (!resp.ok) throw new Error(`Search failed: ${resp.status}`);
 
