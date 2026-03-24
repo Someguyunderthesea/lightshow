@@ -120,6 +120,70 @@ const LightPatterns = {
       });
     }
   },
+
+  /**
+   * Fireworks — hidden Easter egg pattern! Unlocked via Konami code.
+   * Explosions of color burst from random points and fade out.
+   */
+  fireworks(stadium, bands, audio, time, sensitivity) {
+    const energy = audio.getOverallEnergy() * sensitivity;
+
+    // Spawn new fireworks on beats
+    if (audio.isBeat || Math.random() < energy * 0.08) {
+      if (!stadium._fireworks) stadium._fireworks = [];
+      stadium._fireworks.push({
+        pos: Math.random(),       // position around the stadium
+        row: Math.floor(Math.random() * 4),
+        hue: Math.random() * 360,
+        born: time,
+        speed: 0.8 + Math.random() * 1.2,
+      });
+    }
+
+    if (!stadium._fireworks) stadium._fireworks = [];
+
+    // Remove expired fireworks
+    stadium._fireworks = stadium._fireworks.filter(fw => time - fw.born < 1.5);
+
+    stadium.lights.forEach((light, idx) => {
+      let r = 0, g = 0, b = 0, intensity = 0;
+
+      // Ambient starfield twinkle
+      const twinkle = Math.sin(light.index * 73.1 + time * 3) * 0.5 + 0.5;
+      const ambient = twinkle * 0.05 * energy;
+
+      stadium._fireworks.forEach(fw => {
+        const age = time - fw.born;
+        const fade = Math.max(0, 1 - age / 1.5);
+        const radius = age * fw.speed * 0.3;
+        const pos = light.index / light.total;
+        const dist = Math.abs(pos - fw.pos);
+        const wrap = Math.min(dist, 1 - dist); // wrap around
+        const rowDist = Math.abs(light.row - fw.row) / 4;
+        const d = Math.sqrt(wrap * wrap + rowDist * rowDist);
+
+        if (d < radius && d > radius * 0.5) {
+          const spark = fade * (1 - (d - radius * 0.5) / (radius * 0.5));
+          const sparkle = Math.sin(d * 200 + time * 20) * 0.3 + 0.7;
+          const i = spark * sparkle * Math.min(1, energy * 2);
+          const hShift = (fw.hue + age * 120) % 360;
+          const [sr, sg, sb] = hslToRgb(hShift / 360, 0.95, 0.6);
+          r = Math.min(255, r + sr * i);
+          g = Math.min(255, g + sg * i);
+          b = Math.min(255, b + sb * i);
+          intensity = Math.min(1, intensity + i);
+        }
+      });
+
+      // Add ambient
+      r = Math.min(255, r + ambient * 40);
+      g = Math.min(255, g + ambient * 20);
+      b = Math.min(255, b + ambient * 60);
+      intensity = Math.max(intensity, ambient);
+
+      stadium.setLight(idx, r, g, b, intensity);
+    });
+  },
 };
 
 // Helper: HSL to RGB (all inputs 0-1, outputs 0-255)

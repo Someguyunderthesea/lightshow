@@ -244,6 +244,37 @@
     return div.innerHTML;
   }
 
+  // --- Konami Code Easter Egg ---
+  const konamiSequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let konamiProgress = 0;
+  let konamiUnlocked = false;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === konamiSequence[konamiProgress]) {
+      konamiProgress++;
+      if (konamiProgress === konamiSequence.length) {
+        konamiProgress = 0;
+        if (!konamiUnlocked) {
+          konamiUnlocked = true;
+          const opt = document.createElement('option');
+          opt.value = 'fireworks';
+          opt.textContent = 'Fireworks';
+          patternSelect.appendChild(opt);
+          patternSelect.value = 'fireworks';
+          currentPattern = 'fireworks';
+          nowPlaying.textContent = 'Easter egg unlocked! Fireworks mode activated.';
+          if (!animationId) startLoop();
+        } else {
+          patternSelect.value = 'fireworks';
+          currentPattern = 'fireworks';
+          nowPlaying.textContent = 'Fireworks mode activated!';
+        }
+      }
+    } else {
+      konamiProgress = e.key === konamiSequence[0] ? 1 : 0;
+    }
+  });
+
   // Initial draw
   stadium.draw();
 })();
