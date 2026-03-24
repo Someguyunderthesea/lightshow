@@ -125,13 +125,15 @@ const LightPatterns = {
    * Fireworks — hidden Easter egg pattern! Unlocked via Konami code.
    * Explosions of color burst from random points and fade out.
    */
+  _fireworks: [],
+
   fireworks(stadium, bands, audio, time, sensitivity) {
     const energy = audio.getOverallEnergy() * sensitivity;
+    const MAX_FIREWORKS = 30;
 
     // Spawn new fireworks on beats
-    if (audio.isBeat || Math.random() < energy * 0.08) {
-      if (!stadium._fireworks) stadium._fireworks = [];
-      stadium._fireworks.push({
+    if ((audio.isBeat || Math.random() < energy * 0.08) && this._fireworks.length < MAX_FIREWORKS) {
+      this._fireworks.push({
         pos: Math.random(),       // position around the stadium
         row: Math.floor(Math.random() * 4),
         hue: Math.random() * 360,
@@ -140,10 +142,8 @@ const LightPatterns = {
       });
     }
 
-    if (!stadium._fireworks) stadium._fireworks = [];
-
     // Remove expired fireworks
-    stadium._fireworks = stadium._fireworks.filter(fw => time - fw.born < 1.5);
+    this._fireworks = this._fireworks.filter(fw => time - fw.born < 1.5);
 
     stadium.lights.forEach((light, idx) => {
       let r = 0, g = 0, b = 0, intensity = 0;
@@ -152,7 +152,7 @@ const LightPatterns = {
       const twinkle = Math.sin(light.index * 73.1 + time * 3) * 0.5 + 0.5;
       const ambient = twinkle * 0.05 * energy;
 
-      stadium._fireworks.forEach(fw => {
+      this._fireworks.forEach(fw => {
         const age = time - fw.born;
         const fade = Math.max(0, 1 - age / 1.5);
         const radius = age * fw.speed * 0.3;

@@ -249,7 +249,20 @@
   let konamiProgress = 0;
   let konamiUnlocked = false;
 
+  let konamiMsgTimeout = null;
+
+  function showKonamiMessage(msg) {
+    nowPlaying.textContent = msg;
+    clearTimeout(konamiMsgTimeout);
+    konamiMsgTimeout = setTimeout(() => {
+      if (nowPlaying.textContent === msg) nowPlaying.textContent = '';
+    }, 3000);
+  }
+
   document.addEventListener('keydown', (e) => {
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
     if (e.key === konamiSequence[konamiProgress]) {
       konamiProgress++;
       if (konamiProgress === konamiSequence.length) {
@@ -260,15 +273,11 @@
           opt.value = 'fireworks';
           opt.textContent = 'Fireworks';
           patternSelect.appendChild(opt);
-          patternSelect.value = 'fireworks';
-          currentPattern = 'fireworks';
-          nowPlaying.textContent = 'Easter egg unlocked! Fireworks mode activated.';
-          if (!animationId) startLoop();
-        } else {
-          patternSelect.value = 'fireworks';
-          currentPattern = 'fireworks';
-          nowPlaying.textContent = 'Fireworks mode activated!';
         }
+        patternSelect.value = 'fireworks';
+        currentPattern = 'fireworks';
+        showKonamiMessage('Easter egg unlocked! Fireworks mode activated.');
+        if (!animationId) startLoop();
       }
     } else {
       konamiProgress = e.key === konamiSequence[0] ? 1 : 0;
